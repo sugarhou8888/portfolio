@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作品集 · 家居视觉设计</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B1710'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='34' fill='%23EAE4D8' text-anchor='middle'%3E%E4%BD%9C%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn" crossorigin>
+<link href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@500;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============ 基础与设计变量 ============ */
+:root{
+  --paper: #EAE4D8;
+  --paper-2: #F4EFE5;
+  --ink: #1B1710;
+  --ink-soft: rgba(27,23,16,.58);
+  --ink-faint: rgba(27,23,16,.34);
+  --line: rgba(27,23,16,.16);
+  --accent: #7A5A32;
+  --serif: "Noto Serif SC","Songti SC",Georgia,"Times New Roman",serif;
+  --sans: "Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html,body{ height:100%; }
+html{ overflow:hidden; }
+body{
+  overflow:hidden; overscroll-behavior:none;
+  background:var(--paper); color:var(--ink);
+  font-family:var(--sans); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+img{ -webkit-user-drag:none; user-select:none; }
+::selection{ background:rgba(122,90,50,.28); }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+.kbd{
+  display:inline-block; padding:1px 6px; margin-left:8px;
+  border:1px solid currentColor; border-radius:4px;
+  font-family:var(--sans); font-size:10px; letter-spacing:.08em; opacity:.7;
+}
+
+/* ============ 纸纹颗粒 ============ */
+.grain{
+  position:fixed; inset:-40px; z-index:8; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity:.05; mix-blend-mode:overlay;
+}
+
+/* ============ 固定页头与滚动提示 ============ */
+.site-head{
+  position:fixed; top:0; left:0; right:0; z-index:10;
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding:26px 34px; pointer-events:none;
+}
+.site-title h1{ font-family:var(--serif); font-weight:900; font-size:26px; letter-spacing:.06em; line-height:1.15; }
+.site-sub{ margin-top:7px; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--ink-soft); font-weight:500; }
+.site-meta{ text-align:right; font-size:12px; color:var(--ink); font-weight:500; letter-spacing:.04em; }
+.site-meta .site-meta-sub{ margin-top:7px; font-size:11px; color:var(--ink-soft); letter-spacing:.18em; }
+
+.scroll-hint{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%); z-index:10;
+  display:flex; flex-direction:column; align-items:center; gap:9px;
+  font-size:12px; letter-spacing:.34em; color:var(--ink-soft); font-weight:500;
+  transition:opacity .6s ease, transform .6s ease; pointer-events:none;
+}
+.scroll-hint.is-hidden{ opacity:0; transform:translate(-50%,10px); }
+body.detail-open .site-head, body.detail-open .scroll-hint{ opacity:0; }
+.hint-arrow{ width:15px; height:15px; animation:hintDrop 2.2s cubic-bezier(.45,.05,.35,1) infinite; }
+@keyframes hintDrop{ 0%,20%{ transform:translateY(-3px); opacity:.25 } 60%{ transform:translateY(5px); opacity:1 } 100%{ transform:translateY(5px); opacity:.25 } }
+
+/* ============ 无限滚动画廊 ============ */
+.gallery{
+  position:fixed; inset:0; z-index:1; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center;
+  gap:12vh; padding-top:14vh;
+}
+.gallery__slide{
+  position:relative;
+  transform:translateX(var(--stagger,0vw));
+  width:var(--img-w,220px);
+  will-change:transform;
+}
+.gallery__slide:nth-child(1)  { --stagger:-21vw; --img-w:230px; }
+.gallery__slide:nth-child(2)  { --stagger: 12vw; --img-w:290px; }
+.gallery__slide:nth-child(3)  { --stagger: -8vw; --img-w:205px; }
+.gallery__slide:nth-child(4)  { --stagger: 19vw; --img-w:265px; }
+.gallery__slide:nth-child(5)  { --stagger:-15vw; --img-w:240px; }
+.gallery__slide:nth-child(6)  { --stagger:  5vw; --img-w:215px; }
+.gallery__slide:nth-child(7)  { --stagger:-11vw; --img-w:275px; }
+.gallery__slide:nth-child(8)  { --stagger: 17vw; --img-w:230px; }
+.gallery__slide:nth-child(9)  { --stagger:-19vw; --img-w:255px; }
+.gallery__slide:nth-child(10) { --stagger:  7vw; --img-w:215px; }
+.gallery__slide:nth-child(11) { --stagger:-14vw; --img-w:370px; }
+.gallery__slide:nth-child(12) { --stagger: 15vw; --img-w:210px; }
+
+.gallery__img-wrapper{ overflow:hidden; background:var(--paper-2); box-shadow:0 1px 0 rgba(27,23,16,.06), 0 26px 52px -26px rgba(27,23,16,.38); }
+.gallery__img{
+  display:block; width:100%; height:auto;
+  transition:transform .55s cubic-bezier(.22,1,.36,1);
+}
+.gallery__slide:hover .gallery__img,
+.gallery__slide:focus-visible .gallery__img{ transform:scale(1.045); }
+
+.gallery__cap{
+  display:flex; align-items:baseline; gap:12px; margin-top:12px;
+}
+.gallery__idx{
+  font-size:11px; font-weight:500; letter-spacing:.16em;
+  color:var(--ink-soft); font-variant-numeric:tabular-nums;
+}
+.gallery__name{
+  font-family:var(--serif); font-weight:700; font-size:17px; line-height:1.4;
+  text-decoration:underline; text-underline-offset:4px; text-decoration-color:transparent;
+  transition:text-decoration-color .35s ease;
+}
+.gallery__slide:hover .gallery__name,
+.gallery__slide:focus-visible .gallery__name{ text-decoration-color:var(--ink); }
+
+@media (max-width:720px){
+  .gallery__slide{ --stagger:calc(var(--stagger)*0.38); --img-w:calc(var(--img-w)*0.82); }
+  .site-head{ padding:18px 20px; }
+  .site-title h1{ font-size:21px; }
+  .site-sub{ letter-spacing:.16em; }
+  .site-meta{ font-size:11px; }
+  .gallery{ gap:10vh; padding-top:11vh; }
+}
+@media (max-width:560px){
+  .site-head{ flex-direction:column; align-items:flex-start; gap:10px; padding:16px 18px; }
+  .site-title h1{ font-size:19px; letter-spacing:.05em; }
+  .site-sub{ margin-top:5px; font-size:9px; letter-spacing:.14em; }
+  .site-meta{ text-align:left; font-size:11px; letter-spacing:.03em; }
+  .site-meta .site-meta-sub{ margin-top:5px; font-size:10px; letter-spacing:.12em; }
+  .gallery__slide{ --stagger:calc(var(--stagger)*0.30); --img-w:calc(var(--img-w)*0.88); }
+  .gallery__cap{ margin-top:8px; gap:10px; }
+  .gallery__name{ font-size:15px; }
+  .scroll-hint{ bottom:18px; font-size:11px; letter-spacing:.3em; }
+  body{ -webkit-tap-highlight-color:transparent; }
+}
+
+/* ============ 详情浮层 ============ */
+.content{
+  position:fixed; inset:0; z-index:60; display:none;
+  background:var(--d-bg,#16130D); color:var(--d-paper,#EDE7DA);
+  overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+}
+.content-wrapper{ max-width:1180px; margin:0 auto; padding:24px 26px 130px; }
+
+.detail-head{
+  display:grid; grid-template-columns:1fr auto 1fr; align-items:start; gap:18px;
+  padding-top:6px;
+}
+.content__back{
+  justify-self:start;
+  appearance:none; border:1px solid var(--d-line,rgba(237,231,218,.22)); background:transparent;
+  color:var(--d-paper,#EDE7DA); font-family:var(--sans); font-size:12px; letter-spacing:.1em; font-weight:500;
+  padding:9px 14px; border-radius:999px; cursor:pointer;
+  transition:border-color .3s ease, color .3s ease, background .3s ease;
+}
+.content__back:hover{ border-color:var(--d-accent,#B79564); color:var(--d-accent,#B79564); }
+.detail-title-wrap{ text-align:center; min-width:0; }
+.detail-title{ font-family:var(--serif); font-weight:900; font-size:32px; line-height:1.25; letter-spacing:.04em; }
+.detail-meta{ margin-top:7px; font-size:12px; letter-spacing:.14em; color:var(--d-soft,rgba(237,231,218,.62)); font-weight:500; }
+.detail-count{ justify-self:end; font-size:12px; letter-spacing:.2em; color:var(--d-soft,rgba(237,231,218,.62)); font-variant-numeric:tabular-nums; padding-top:12px; }
+
+.content__preview-img{
+  margin:38px auto 0; overflow:hidden;
+  background:#0D0B07; box-shadow:0 34px 90px -34px rgba(0,0,0,.72);
+}
+.content__preview-img img{ display:block; width:100%; height:100%; object-fit:cover; transform:scale(1.08); }
+
+.detail-divider{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin:66px 0 34px; padding-top:20px; border-top:1px solid var(--d-line,rgba(237,231,218,.18));
+  font-size:12px; letter-spacing:.24em; color:var(--d-soft,rgba(237,231,218,.62)); font-weight:500;
+}
+.detail-list{ display:flex; flex-direction:column; gap:9vh; }
+.detail-img{ margin:0 auto; width:min(920px,100%); }
+.detail-img img{
+  display:block; width:100%; height:auto;
+  background:#0D0B07; box-shadow:0 26px 64px -30px rgba(0,0,0,.6);
+}
+.detail-img figcaption{
+  display:flex; justify-content:space-between; margin-top:11px;
+  font-size:12px; letter-spacing:.16em; color:var(--d-soft,rgba(237,231,218,.62)); font-weight:500;
+  font-variant-numeric:tabular-nums;
+}
+
+@media (max-width:720px){
+  .content-wrapper{ padding:16px 16px 90px; }
+  .detail-head{ grid-template-columns:auto 1fr auto; gap:10px; }
+  .detail-title{ font-size:22px; }
+  .detail-meta{ font-size:10px; }
+  .detail-count{ font-size:10px; }
+  .content__preview-img{ margin-top:26px; }
+  .detail-divider{ margin:44px 0 26px; }
+  .detail-list{ gap:7vh; }
+}
+@media (max-width:560px){
+  .content-wrapper{ padding:14px 14px 60px; }
+  .detail-head{ grid-template-columns:auto 1fr; }
+  .detail-count{ grid-column:1 / -1; justify-self:end; padding-top:2px; }
+  .detail-title{ font-size:20px; letter-spacing:.02em; }
+  .detail-meta{ margin-top:5px; }
+  .content__preview-img{ margin-top:22px; }
+  .detail-divider{ margin:36px 0 20px; }
+  .detail-list{ gap:6vh; }
+  .detail-img figcaption{ font-size:11px; }
+  .content__back{ padding:8px 12px; font-size:11px; }
+}
+
+/* ============ 拆分文字 ============ */
+.char{ display:inline-block; }
+@media (prefers-reduced-motion:reduce){
+  .content__preview-img img{ transform:none; }
+  .hint-arrow{ animation:none; }
+  .gallery__img{ transition:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="site-head">
+  <div class="site-title">
+    <h1>作品集-侯惠玲</h1>
+    <p class="site-sub">Portfolio — Furniture Visual Design</p>
+  </div>
+  <div class="site-meta">
+    <p>跨境电商 · 家居视觉设计</p>
+    <p class="site-meta-sub">微信/手机号码：13612900378</p>
+  </div>
+</header>
+
+<div class="scroll-hint" aria-hidden="true">
+  <span>滚动探索</span>
+  <svg class="hint-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 9l7 7 7-7"/></svg>
+</div>
+
+<main class="gallery" id="gallery" aria-label="作品画廊"></main>
+
+<section class="content" id="detail" role="dialog" aria-modal="true" aria-label="作品详情" tabindex="-1">
+  <div class="content-wrapper">
+    <header class="detail-head">
+      <button class="content__back" type="button" id="backBtn">← 返回<span class="kbd">Esc</span></button>
+      <div class="detail-title-wrap">
+        <h2 class="detail-title" id="detailTitle"></h2>
+        <p class="detail-meta" id="detailMeta"></p>
+      </div>
+      <div class="detail-count" id="detailCount"></div>
+    </header>
+    <figure class="content__preview-img" id="preview"><img id="previewImg" alt=""></figure>
+    <div class="detail-divider">
+      <span>全部图片</span>
+      <span id="detailTotal"></span>
+    </div>
+    <div class="detail-list" id="detailList"></div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Observer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/Flip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/SplitText.min.js"></script>
+<script>
+/* ============ 作品数据 ============ */
+const A_AR = { 1:"970/2456", 2:"1464/4200", 3:"1464/3531", 4:"4000/8000", 5:"4000/8001", 6:"1464/3600", 7:"1464/3598", 8:"1464/4200", 9:"1464/3603", 10:"1464/4212" };
+function M(hi, a){
+  const arr = [];
+  for (let i = 2; i <= hi; i++) arr.push({ f:"主图"+i+".jpg", cap:"主图 "+String(i).padStart(2,"0"), ar:"1/1" });
+  arr.push({ f:"A+.jpg", cap:"A+ 主图", ar:a });
+  return arr;
+}
+const PROJECTS = [
+  { id:1, pre:"01",  name:"圣诞装饰球",   tag:"节日家居 · 装饰摆件",      dir:"1圣诞装饰球",    cover:"主图1.jpg", coverW:1600, coverH:1600, images:M(7, A_AR[1]) },
+  { id:2, pre:"02",  name:"转椅",         tag:"办公家居 · 座椅",          dir:"2转椅",          cover:"主图1.jpg", coverW:2000, coverH:2000, images:M(7, A_AR[2]) },
+  { id:3, pre:"03",  name:"皮质吧椅",     tag:"餐厨家居 · 吧椅",          dir:"3皮质吧椅",      cover:"主图1.jpg", coverW:2000, coverH:2000, images:M(7, A_AR[3]) },
+  { id:4, pre:"04",  name:"床头柜",       tag:"卧室家居 · 收纳",          dir:"4床头柜",        cover:"主图1.jpg", coverW:2000, coverH:2000, images:M(7, A_AR[4]) },
+  { id:5, pre:"05",  name:"拉伸餐桌",     tag:"餐厨家居 · 餐桌",          dir:"5拉伸餐桌",      cover:"主图1.jpg", coverW:2000, coverH:2000, images:M(7, A_AR[5]) },
+  { id:6, pre:"06",  name:"藤编吧椅",     tag:"餐厨家居 · 吧椅",          dir:"6藤编吧椅",      cover:"主图1.jpg", coverW:2000, coverH:2000, images:M(7, A_AR[6]) },
+  { id:7, pre:"07",  name:"组合沙发 01",  tag:"客厅家居 · 组合沙发",      dir:"7组合沙发-1",    cover:"主图1.jpg", coverW:2000, coverH:2000, images:M(7, A_AR[7]) },
+  { id:8, pre:"08",  name:"组合沙发 02",  tag:"客厅家居 · 组合沙发",      dir:"8组合沙发-2",    cover:"主图1.jpg", coverW:2000, coverH:2000, images:M(7, A_AR[8]) },
+  { id:9, pre:"09",  name:"组合沙发 03",  tag:"客厅家居 · 组合沙发",      dir:"9组合沙发-3",    cover:"主图1.jpg", coverW:2048, coverH:2048, images:M(6, A_AR[9]) },
+  { id:10, pre:"10", name:"组合沙发 04",  tag:"客厅家居 · 组合沙发",      dir:"10组合沙发-4",   cover:"主图1.jpg", coverW:2000, coverH:2000, images:M(7, A_AR[10]) },
+  { id:11, pre:"11", name:"活动 Banner 设计", tag:"促销活动 · 多尺寸视觉", dir:"11活动banner设计", cover:"1.jpg", coverW:1200, coverH:600,
+    images:[
+      { f:"2.jpg",    cap:"活动海报 02", ar:"2560/1440" },
+      { f:"3.jpg",    cap:"活动海报 03", ar:"1200/600" },
+      { f:"4.jpg",    cap:"活动海报 04", ar:"1200/600" },
+      { f:"600-1.jpg",cap:"方形图 01",   ar:"1/1" },
+      { f:"600-2.jpg",cap:"方形图 02",   ar:"1/1" },
+      { f:"600-3.jpg",cap:"方形图 03",   ar:"1/1" },
+      { f:"600-4.jpg",cap:"方形图 04",   ar:"1/1" },
+      { f:"600-5.jpg",cap:"方形图 05",   ar:"1/1" },
+      { f:"970-1.jpg",cap:"宽幅 Banner", ar:"970/250" }
+    ] },
+  { id:12, pre:"12", name:"店铺视觉设计", tag:"亚马逊品牌店铺页",          dir:"12店铺视觉设计", cover:"店铺1.jpg", coverW:1920, coverH:7728,
+    images:[ { f:"店铺2.jpg", cap:"店铺页 02", ar:"1920/5689" } ] }
+];
+
+/* ============ 构建画廊 ============ */
+const galleryEl = document.getElementById("gallery");
+PROJECTS.forEach((p, i) => {
+  const fig = document.createElement("figure");
+  fig.className = "gallery__slide";
+  fig.tabIndex = 0; fig.setAttribute("role","button");
+  fig.setAttribute("aria-label","查看作品：" + p.name);
+  const wrap = document.createElement("div"); wrap.className = "gallery__img-wrapper";
+  const img = document.createElement("img");
+  img.className = "gallery__img";
+  img.src = "images/" + p.pre + "-" + p.cover;
+  img.alt = p.name;
+  img.decoding = "async";
+  img.style.aspectRatio = p.coverW + "/" + p.coverH;
+  if (i >= 6) img.loading = "lazy";
+  wrap.appendChild(img);
+  const cap = document.createElement("figcaption"); cap.className = "gallery__cap";
+  const idx = document.createElement("span"); idx.className = "gallery__idx"; idx.textContent = String(p.id).padStart(2,"0");
+  const name = document.createElement("span"); name.className = "gallery__name"; name.textContent = p.name;
+  cap.appendChild(idx); cap.appendChild(name);
+  fig.appendChild(wrap); fig.appendChild(cap);
+  galleryEl.appendChild(fig);
+});
+
+/* ============ 引擎：无限滚动循环 ============ */
+function verticalLoop(items, config = {}){
+  config = { repeat:-1, paused:true, speed:1, paddingBottom:0, ...config };
+  const tl = gsap.timeline({ repeat:config.repeat, paused:config.paused, defaults:{ ease:"none" } });
+  const els = gsap.utils.toArray(items);
+  const snap = gsap.utils.snap(1);
+  const pixelsPerSecond = (config.speed || 1) * 100;
+  const startY = els[0].offsetTop;
+  const yPercents = els.map(() => 0);
+  const heights = [];
+  let totalHeight = 0;
+  els.forEach(el => heights.push(el.offsetHeight));
+  totalHeight = (els[els.length-1].offsetTop + els[els.length-1].offsetHeight) - startY + (config.paddingBottom || 0);
+  els.forEach((el, i) => {
+    const curY = (yPercents[i] / 100) * heights[i];
+    const distanceToStart = el.offsetTop + curY - startY;
+    const distanceToLoop = distanceToStart + heights[i] * gsap.getProperty(el, "scaleY");
+    tl.to(el, { yPercent: snap(((curY - distanceToLoop) / heights[i]) * 100), duration: distanceToLoop / pixelsPerSecond }, 0)
+      .fromTo(el,
+        { yPercent: snap(((curY - distanceToLoop + totalHeight) / heights[i]) * 100) },
+        { yPercent: yPercents[i], duration: (totalHeight - distanceToLoop) / pixelsPerSecond, immediateRender:false },
+        distanceToLoop / pixelsPerSecond);
+  });
+  tl.totalProgress(1, true).totalProgress(0, true);
+  return tl;
+}
+
+const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const hintEl = document.querySelector(".scroll-hint");
+
+/* ============ 滑块：滚轮 / 触摸 → 循环播放头 ============ */
+class Slider {
+  constructor({ enabled, onToggle }){
+    this.enabled = enabled;
+    this.onToggle = onToggle;
+    this.playhead = { time:0 };
+    this.hintShown = false;
+    this.createLoop();
+    this.createScrub();
+    this.createParallax();
+    this.createObserver();
+    let t;
+    window.addEventListener("resize", () => {
+      clearTimeout(t); t = setTimeout(() => this.rebuild(), 260);
+    });
+  }
+  createLoop(){
+    const gap = parseFloat(getComputedStyle(galleryEl).rowGap) || 0;
+    this.loop = verticalLoop(".gallery__slide", { repeat:-1, paused:true, paddingBottom:gap });
+    this.wrap = gsap.utils.wrap(0, this.loop.duration());
+  }
+  createScrub(){
+    this.scrub = gsap.to(this.playhead, {
+      time:0, duration: REDUCED ? 0.01 : 0.75, ease:"power3.out", paused:true,
+      onUpdate: () => {
+        this.loop.time(this.wrap(this.playhead.time));
+        this.applyParallax();
+      }
+    });
+  }
+  scroll(self){
+    if (!this.enabled()) return;
+    // GSAP Observer 的 self 没有 eventType 字段，用原生事件的 type 判断触摸
+    const evType = (self.event && self.event.type) || "";
+    const isTouch = evType.indexOf("touch") === 0;
+    let delta = Math.abs(self.deltaX) > Math.abs(self.deltaY) ? self.deltaX : self.deltaY;
+    // 触摸事件的 deltaY 与手指方向一致（上滑为负），取反后与滚轮语义统一：
+    // 手指上滑 → 图片上滚；桌面滚轮行为保持不变
+    if (isTouch) delta = -delta;
+    this.scrub.vars.time += delta / 100;
+    this.scrub.vars.duration = isTouch ? 0.12 : 0.75;
+    this.scrub.invalidate().restart();
+    if (!this.hintShown && Math.abs(delta) > 8){
+      this.hintShown = true;
+      hintEl.classList.add("is-hidden");
+    }
+  }
+  createObserver(){
+    this.observer = Observer.create({
+      target: window,
+      type: "wheel,touch",
+      preventDefault: true,
+      onChange: (self) => this.scroll(self)
+    });
+  }
+  createParallax(){
+    const speeds = this.parallaxSpeeds();
+    this.parallax = gsap.utils.toArray(".gallery__slide").map((el, i) => ({
+      el, factor: speeds[i % speeds.length] - 1, offset: 0, visible: false
+    }));
+    this.applyParallax();
+  }
+  parallaxSpeeds(){
+    if (REDUCED) return [1];
+    return window.matchMedia("(max-width:560px)").matches
+      ? [1.18, 0.9, 1.08, 0.96, 1.14, 1.02]
+      : [1.3, 0.8, 1.15, 0.7, 1.25, 0.85];
+  }
+  applyParallax(immediate = false){
+    const changes = [];
+    this.parallax.forEach((item) => {
+      const rect = item.el.getBoundingClientRect();
+      const loopTop = rect.top - item.offset;
+      item.offset = item.factor * (loopTop + rect.height);
+      gsap.set(item.el, { y: item.offset });
+      const top = loopTop + item.offset;
+      const visible = top < window.innerHeight && top + rect.height > 0;
+      if (visible !== item.visible){
+        item.visible = visible;
+        changes.push({ el: item.el, visible, top });
+      }
+    });
+    if (changes.length) this.onToggle?.(changes, immediate);
+  }
+  freeze(){
+    this.scrub.pause();
+    this.scrub.vars.time = this.playhead.time;
+    this.scrub.invalidate();
+  }
+  stop(){ this.observer.disable(); this.freeze(); }
+  start(){ this.observer.enable(); }
+  rebuild(){
+    this.loop.kill();
+    gsap.set(".gallery__slide", { clearProps:"transform" });
+    const speeds = this.parallaxSpeeds();
+    this.parallax.forEach((p, i) => { p.factor = speeds[i % speeds.length] - 1; p.offset = 0; p.visible = false; });
+    this.createLoop();
+    this.scrub.invalidate().restart();
+    this.applyParallax(true);
+  }
+}
+
+/* ============ 入场淡入 ============ */
+class Reveal {
+  constructor(){
+    this.items = new Map();
+    gsap.utils.toArray(".gallery__slide").forEach((slide) => {
+      const wrapper = slide.querySelector(".gallery__img-wrapper");
+      const name = slide.querySelector(".gallery__name");
+      let chars = null;
+      if (REDUCED){
+        gsap.set(name, { autoAlpha:0 });
+      } else {
+        chars = new SplitText(name, { type:"chars" }).chars;
+        gsap.set(chars, { autoAlpha:0 });
+      }
+      gsap.set(wrapper, { autoAlpha:0 });
+      this.items.set(slide, { wrapper, chars });
+    });
+  }
+  toggle(changes, immediate = false){
+    changes.filter(c => c.visible).sort((a, b) => a.top - b.top).forEach((c, i) => this.show(c.el, i * 0.12, immediate));
+    changes.filter(c => !c.visible).forEach(c => this.hide(c.el));
+  }
+  show(slide, delay, immediate = false){
+    const { wrapper, chars } = this.items.get(slide);
+    if (immediate){
+      gsap.set([wrapper, ...(chars || [])], { autoAlpha:1, overwrite:true });
+      return;
+    }
+    gsap.to(wrapper, { autoAlpha:1, duration: REDUCED ? 0.01 : 1, ease:"power2.out", delay, overwrite:true });
+    if (chars){
+      gsap.to(chars, { autoAlpha:1, duration: REDUCED ? 0.01 : 0.4, ease:"none", stagger:0.025, delay:delay + 0.2, overwrite:true });
+    }
+  }
+  hide(slide){
+    const { wrapper, chars } = this.items.get(slide);
+    gsap.set([wrapper, ...(chars || [])], { autoAlpha:0, overwrite:true });
+  }
+}
+
+/* ============ FLIP 全屏过渡 ============ */
+class Transition {
+  constructor(){
+    this.state = "closed";
+    this.el = document.getElementById("detail");
+    this.preview = document.getElementById("preview");
+    this.previewImg = document.getElementById("previewImg");
+    this.back = document.getElementById("backBtn");
+    this.title = document.getElementById("detailTitle");
+    this.meta = document.getElementById("detailMeta");
+    this.count = document.getElementById("detailCount");
+    this.total = document.getElementById("detailTotal");
+    this.list = document.getElementById("detailList");
+    this.split = null;
+    this.tl = null;
+    this.activeSlide = null;
+    this.onClose = null;
+    this.preview.dataset.flipId = "preview";
+  }
+  fillContent(p){
+    this.title.textContent = p.name;
+    this.meta.textContent = p.tag;
+    this.count.textContent = String(p.id).padStart(2, "0") + " / " + PROJECTS.length;
+    this.total.textContent = p.images.length + 1 + " 张";
+    this.previewImg.src = "images/" + p.pre + "-" + p.cover;
+    this.list.innerHTML = "";
+    p.images.forEach((im, i) => {
+      const fig = document.createElement("figure");
+      fig.className = "detail-img";
+      const img = document.createElement("img");
+      img.src = "images/" + p.pre + "-" + im.f;
+      img.alt = p.name + " · " + im.cap;
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.style.aspectRatio = im.ar;
+      const c = document.createElement("figcaption");
+      const s1 = document.createElement("span"); s1.textContent = im.cap;
+      const s2 = document.createElement("span"); s2.textContent = String(i + 2).padStart(2, "0") + " / " + (p.images.length + 1);
+      c.appendChild(s1); c.appendChild(s2);
+      fig.appendChild(img); fig.appendChild(c);
+      this.list.appendChild(fig);
+    });
+    this.el.scrollTop = 0;
+    const isNarrow = window.innerWidth <= 560;
+    const maxW = Math.min(window.innerWidth * (isNarrow ? 0.86 : 0.78), 1080);
+    const maxH = Math.min(window.innerHeight * 0.62, 980);
+    let s = Math.min(maxW / p.coverW, maxH / p.coverH);
+    if (s > 1) s = 1;
+    this.preview.style.width = Math.round(p.coverW * s) + "px";
+    this.preview.style.height = Math.round(p.coverH * s) + "px";
+  }
+  async open(slide, index){
+    if (this.state !== "closed") return;
+    this.state = "opening";
+    this.activeSlide = slide;
+    const p = PROJECTS[index];
+    await this.fillContent(p);
+    await this.previewImg.decode().catch(() => {});
+    if (this.state !== "opening") return;
+    const wrapper = slide.querySelector(".gallery__img-wrapper");
+    const cap = slide.querySelector(".gallery__cap");
+    const others = gsap.utils.toArray(".gallery__slide")
+      .filter(s => s !== slide)
+      .flatMap(s => [s.querySelector(".gallery__img-wrapper"), s.querySelector(".gallery__cap")]);
+    wrapper.dataset.flipId = "preview";
+    const state = Flip.getState(wrapper);
+    gsap.set(this.el, { display:"block" });
+    document.body.classList.add("detail-open");
+    gsap.killTweensOf(wrapper);
+    gsap.set(wrapper, { autoAlpha:0 });
+    this.split = new SplitText("#backBtn, .detail-title, .detail-meta", { type:"lines,chars", charsClass:"char" });
+    const chars = this.split.chars;
+    gsap.set(chars, { autoAlpha:0 });
+    const zoom = REDUCED ? 0.01 : 1.1;
+    this.tl = gsap.timeline({ onComplete: () => { this.state = "open"; }, onReverseComplete: () => this.reset() });
+    this.tl
+      .to(others, { autoAlpha:0, duration: REDUCED ? 0.01 : 0.5, ease:"power2.out" }, 0)
+      .to(cap, { autoAlpha:0, duration: REDUCED ? 0.01 : 0.3, ease:"power2.out" }, 0)
+      .add(Flip.from(state, { targets:this.preview, duration:zoom, ease:"power4.inOut", absolute:true }), 0)
+      .to(this.previewImg, { scale:1, duration:zoom, ease:"power4.inOut" }, 0);
+    if (!REDUCED){
+      this.split.lines.forEach((line, i) => {
+        this.tl.fromTo(line.querySelectorAll(".char"), { autoAlpha:0 }, { autoAlpha:1, duration:1, ease:"power3.out", stagger:0.01 }, 0.75 + i * 0.06);
+      });
+      this.tl.fromTo(this.list.children, { autoAlpha:0, y:26 }, { autoAlpha:1, y:0, duration:0.7, ease:"power2.out", stagger:0.07 }, 0.7);
+    } else {
+      this.tl.set(chars, { autoAlpha:1 }, 0.01);
+      this.tl.set(this.list.children, { autoAlpha:1 }, 0.01);
+    }
+    this.back.focus({ preventScroll:true });
+  }
+  close(){
+    if (this.state === "opening"){
+      this.state = "closing";
+      if (!this.tl){ this.reset(); return; }
+      this.tl.reverse();
+      return;
+    }
+    if (this.state !== "open") return;
+    this.state = "closing";
+    const wrapper = this.activeSlide.querySelector(".gallery__img-wrapper");
+    const cap = this.activeSlide.querySelector(".gallery__cap");
+    const others = gsap.utils.toArray(".gallery__slide")
+      .filter(s => s !== this.activeSlide)
+      .flatMap(s => [s.querySelector(".gallery__img-wrapper"), s.querySelector(".gallery__cap")]);
+    this.tl = gsap.timeline({ onComplete: () => this.reset() });
+    const zoom = REDUCED ? 0.01 : 0.9;
+    this.tl
+      .to(this.split.lines, { autoAlpha:0, duration: REDUCED ? 0.01 : 0.4, stagger:0.04, ease:"power1.out" }, 0)
+      .to(this.list.children, { autoAlpha:0, duration: REDUCED ? 0.01 : 0.3, stagger:0.03, ease:"power1.out" }, 0)
+      .add(Flip.fit(this.preview, wrapper, { duration:zoom, ease:"power3.inOut", absolute:true }), 0)
+      .to(this.previewImg, { scale:1.08, duration:zoom, ease:"power3.inOut" }, 0)
+      .to(others, { autoAlpha:1, duration: REDUCED ? 0.01 : 0.5, ease:"power2.out" }, REDUCED ? 0.01 : 0.45)
+      .to(cap, { autoAlpha:1, duration: REDUCED ? 0.01 : 0.4, ease:"power2.out" }, REDUCED ? 0.01 : 0.55);
+  }
+  reset(){
+    const prev = this.activeSlide;
+    if (prev){
+      const wrapper = prev.querySelector(".gallery__img-wrapper");
+      delete wrapper.dataset.flipId;
+    }
+    this.split?.revert();
+    this.split = null;
+    this.list.innerHTML = "";
+    this.preview.style.width = ""; this.preview.style.height = "";
+    gsap.set(this.el, { display:"none" });
+    document.body.classList.remove("detail-open");
+    gsap.set(this.preview, { clearProps:"all" });
+    gsap.set(this.previewImg, { clearProps:"all" });
+    if (prev) gsap.set(prev.querySelector(".gallery__img-wrapper"), { clearProps:"all" });
+    this.activeSlide = null;
+    this.tl = null;
+    this.state = "closed";
+    this.onClose?.(prev);
+  }
+}
+
+/* ============ 组装与事件 ============ */
+const reveal = new Reveal();
+const transition = new Transition();
+transition.onClose = (slide) => {
+  slider.start();
+  if (slide) slide.focus({ preventScroll:true });
+};
+const slider = new Slider({
+  enabled: () => transition.state === "closed",
+  onToggle: (changes, immediate) => reveal.toggle(changes, immediate)
+});
+
+gsap.utils.toArray(".gallery__slide").forEach((slide, index) => {
+  const open = () => {
+    if (transition.state !== "closed") return;
+    slider.stop();
+    transition.open(slide, index);
+  };
+  slide.addEventListener("click", open);
+  slide.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); }
+  });
+});
+
+document.getElementById("backBtn").addEventListener("click", () => transition.close());
+window.addEventListener("keydown", (e) => {
+  if (transition.state !== "closed"){
+    if (e.key === "Escape") transition.close();
+    return;
+  }
+  if (e.key === "ArrowDown" || e.key === "PageDown"){
+    e.preventDefault();
+    slider.scroll({ deltaX:0, deltaY: e.key === "PageDown" ? window.innerHeight * 0.8 : 120 });
+  } else if (e.key === "ArrowUp" || e.key === "PageUp"){
+    e.preventDefault();
+    slider.scroll({ deltaX:0, deltaY: -(e.key === "PageUp" ? window.innerHeight * 0.8 : 120) });
+  } else if (e.key === " "){
+    e.preventDefault();
+    slider.scroll({ deltaX:0, deltaY:120 });
+  }
+});
+
+/* ============ 深链：作品集.html#3 直达第 3 件作品 ============ */
+const hl = parseInt((location.hash || "").replace("#", ""), 10);
+if (hl >= 1 && hl <= PROJECTS.length){
+  setTimeout(() => {
+    const slide = document.querySelectorAll(".gallery__slide")[hl - 1];
+    if (slide && transition.state === "closed"){ slider.stop(); transition.open(slide, hl - 1); }
+  }, 600);
+}
+</script>
+</body>
+</html>
